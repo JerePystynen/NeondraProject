@@ -31,37 +31,31 @@
 CRGB leds[NUM_LEDS];
 #define BRIGHTNESS  128
 
-//---------------------------------------------------------------
-void setup() {
-  Serial.begin(115200);
-  delay(500);  // startup delay
-  //FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.addLeds<LED_TYPE, DATA_PIN, CLOCK_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.setBrightness(BRIGHTNESS);
-}
-
-// Create custom gradient palette
 DEFINE_GRADIENT_PALETTE( example_gp ) {
-  0,    0,0,255,
-  5,    0,0,255,
- 80,    0,255,0,
-130,    0,0,255, 
-135,    0,0,255, 
-205,    255,0,255,
-238,    255,0,0,  // I'm making this my last color choice
-255,    255,0,0 };  // And then just duplicating it here
-
+    0,    0,0,255,
+    5,    0,0,255,
+   80,    0,255,0,
+  130,    0,0,255, 
+  135,    0,0,255, 
+  205,    255,0,255,
+  238,    255,0,0, // I'm making this my last color choice
+  255,    255,0,0  // And then just duplicating it here
+};
 CRGBPalette16 myPal = example_gp;  
 
-//---------------------------------------------------------------
-void loop () {
+void setup() {
+  Serial.begin(9600);
+  delay(500);
+  //FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  //FastLED.addLeds<LED_TYPE, DATA_PIN, CLOCK_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  //FastLED.setBrightness(BRIGHTNESS);
+}
 
-  for (uint8_t i=0; i<NUM_LEDS; i++) {
-    uint8_t paletteIndex = map(i,0,NUM_LEDS-1,0,240);  //index is now based on pixel number
-    leds[i] = ColorFromPalette( myPal, paletteIndex, BRIGHTNESS, LINEARBLEND);
+void loop () {
+  for (uint8_t i = 0; i < NUM_LEDS; i++) {
+    uint8_t paletteIndex = map(i, 0, NUM_LEDS - 1, 0, 240);
+    leds[i] = ColorFromPalette(myPal, paletteIndex, BRIGHTNESS, LINEARBLEND);
   }
-  
   FastLED.show();
   FastLED.delay(1000);
-
-}//end_main_loop
+}

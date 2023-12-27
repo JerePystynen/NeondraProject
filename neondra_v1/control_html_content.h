@@ -1,8 +1,8 @@
 const char HTML_CONTENT[] PROGMEM = R"KEWL(
 <html>
 <head>
-  <title>Neondra Control Panel</title>
   <link rel="icon" type="image/x-icon" href="https://neondra.com/neondra/assets/images/logo/favicon.png">
+  <title>Neondra Control Panel</title>
   <style>
     * {
       margin:0;

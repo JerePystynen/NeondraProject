@@ -4,18 +4,18 @@
 
 #include <FastLED.h>
 #include <EEPROM.h>
-#include <JC_Button.h>
+//#include <JC_Button.h>
 
 # define LEFT_OUT_PIN 6             // Left channel data out pin to LEDs [6]
 # define RIGHT_OUT_PIN 5            // Right channel data out pin to LEDs [5]
-# define LEFT_IN_PIN A5             // Left aux in signal [A5]
+# define LEFT_IN_PIN A0             // Left aux in signal [A5]
 # define RIGHT_IN_PIN A4            // Right aux in signal [A4]
 # define BRIGHTNESS_PIN A2          // Brightness potentiometer in [A2]
 # define SENSITIVITY_PIN A1         // Sensitivity potentiometer in [A1]
 # define BTN_PIN 3                  // Push button on this pin [3]
 # define DEBOUNCE_MS 20             // Number of ms to debounce the button [20]
 # define LONG_PRESS 500             // Number of ms to hold the button to count as long press [500]
-# define N_PIXELS 24                // Number of pixels in each string [18]
+# define N_PIXELS 0                // Number of pixels in each string [18]
 # define MAX_MILLIAMPS 500          // Maximum current to draw [500]
 # define COLOR_ORDER GRB            // Colour order of LED strip [GRB]
 # define LED_TYPE WS2812B           // LED string type [WS2812B]
@@ -84,7 +84,7 @@ void setup() {
   FastLED.setMaxPowerInVoltsAndMilliamps(5, MAX_MILLIAMPS);
 
   modeBtn.begin();
-  Serial.begin(57600);
+  Serial.begin(9600);
 
   buttonPushCounter = 0;
   buttonPushCounter = (int)EEPROM.read(1); // load previous setting
@@ -227,6 +227,8 @@ uint16_t auxReading(uint8_t channel) {
     volCountLeft = (volCountLeft + 1) % SAMPLES;
     // Calculate bar height based on dynamic min/max levels (fixed point):
     height = TOP * (lvlLeft - minLvlAvgLeft) / (long)(maxLvlAvgLeft - minLvlAvgLeft);
+
+    Serial.println("\n" + height);
   }
   
   else {
