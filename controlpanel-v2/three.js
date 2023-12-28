@@ -82,7 +82,8 @@ loadGLTF('/neondra1.gltf', false);
 loadGLTF('/neondra-wing.gltf', false);
 loadGLTF('/neondra-wing.gltf', true);
 
-camera.position.z = 5;
+camera.position.z = 8;
+camera.position.y = 2;
 
 window.addEventListener('resize', handleResize);
 function handleResize() {
@@ -91,7 +92,7 @@ function handleResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 handleResize();
-
+        
 document.getElementById('set-wings').addEventListener('change', function (e) {
     targetWingRotation = document.getElementById('set-wings').value;
 });
