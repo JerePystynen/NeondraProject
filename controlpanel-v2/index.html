@@ -67,7 +67,7 @@
             </div>
         </div>
         <div class="status-connections-container">
-            <div class="item" title="Connected" connected="true">
+            <div class="item" title="Status: Connected" connected="true">
                 <span class="circle a"></span> <!-- Blurry halo -->
                 <span class="circle b"></span> <!-- Dual-ring solid -->
                 <span class="circle c"></span> <!-- Dual-ring solid -->
@@ -75,7 +75,7 @@
                 <span class="circle e"></span> <!-- Blurry halo -->
                 <span>Torso</span>
             </div>
-            <div class="item" title="Disconnected" connected="false">
+            <div class="item" title="Status: Disconnected" connected="false">
                 <span class="circle a"></span> <!-- Blurry halo -->
                 <span class="circle b"></span> <!-- Dual-ring solid -->
                 <span class="circle c"></span> <!-- Dual-ring solid -->
@@ -83,7 +83,7 @@
                 <span class="circle e"></span> <!-- Blurry halo -->
                 <span>Wings</span>
             </div>
-            <div class="item" title="Connected" connected="true">
+            <div class="item" title="Status: Connected" connected="true">
                 <span class="circle a"></span> <!-- Blurry halo -->
                 <span class="circle b"></span> <!-- Dual-ring solid -->
                 <span class="circle c"></span> <!-- Dual-ring solid -->
@@ -91,7 +91,7 @@
                 <span class="circle e"></span> <!-- Blurry halo -->
                 <span>Claws</span>
             </div>
-            <div class="item" title="Disconnected" connected="false">
+            <div class="item" title="Status: Disconnected" connected="false">
                 <span class="circle a"></span> <!-- Blurry halo -->
                 <span class="circle b"></span> <!-- Dual-ring solid -->
                 <span class="circle c"></span> <!-- Dual-ring solid -->
@@ -99,7 +99,7 @@
                 <span class="circle e"></span> <!-- Blurry halo -->
                 <span>Legs</span>
             </div>
-            <div class="item" title="Disconnected" connected="false">
+            <div class="item" title="Status: Disconnected" connected="false">
                 <span class="circle a"></span> <!-- Blurry halo -->
                 <span class="circle b"></span> <!-- Dual-ring solid -->
                 <span class="circle c"></span> <!-- Dual-ring solid -->
@@ -125,6 +125,18 @@
             <a class="button small-icon" selected="false" onclick="sendData('set-animation-playstate=false');">
                 <img src="./img/next.png" alt="Stop the Animation" title="Stop the Animation">
             </a>
+        </div>
+        <div class="flex-align">
+            <img src="./img/speaker.png" alt="Volume">
+            <span>Volume:</span>
+            <input type="range" min="0" max="100" value="50" class="slider" id="set-helmet-volume">
+            <span>50%</span>
+        </div>
+        <div class="flex-align">
+            <img src="./img/fan.png" alt="Fan">
+            <span>Fan Speed:</span>
+            <input type="range" min="0" max="100" value="50" class="slider" id="set-helmet-fan">
+            <span>50%</span>
         </div>
         <div class="flex-align">
             <img src="./img/brightness.png" alt="Brightness">
@@ -162,18 +174,6 @@
             <input type="range" min="0" max="100" value="50" class="slider" id="set-helmet-brightness">
             <span>50%</span>
         </div>
-        <div class="flex-align">
-            <img src="./img/fan.png" alt="Fan">
-            <span>Fan Speed:</span>
-            <input type="range" min="0" max="100" value="50" class="slider" id="set-helmet-fan">
-            <span>50%</span>
-        </div>
-        <div class="flex-align">
-            <img src="./img/speaker.png" alt="Volume">
-            <span>Volume:</span>
-            <input type="range" min="0" max="100" value="50" class="slider" id="set-helmet-volume">
-            <span>50%</span>
-        </div>
     </section>
     <section class="suit-mode-selection flex-wrap">
         <div>
@@ -188,8 +188,46 @@
     </section>
     <section>
         <div>
+            <h2>Mic Input</h2>
+            <div class="flex-wrap">
+                <a class="button small-icon" selected="false" onclick="sendData('set-helmet=vumeter');">
+                    <img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer">
+                </a>
+                <a class="button small-icon" selected="false" onclick="sendData('set-helmet=datetime');">
+                    <img src="./img/calendar.png" alt="Datetime" title="Datetime">
+                </a>
+                <a class="button small-icon" selected="false" onclick="sendData('set-helmet=subcount');">
+                    <img src="./img/subscribers.png" alt="Show the Subcount" title="Show the Subcount">
+                </a>
+                <a class="button small-icon" selected="false" onclick="sendData('set-animation-playstate=true');">
+                    <img src="./img/play.png" alt="Play the Animation" title="Play the Animation">
+                </a>
+                <a class="button small-icon" selected="false" onclick="sendData('set-animation-playstate=false');">
+                    <img src="./img/next.png" alt="Stop the Animation" title="Stop the Animation">
+                </a>
+            </div>
+            <div class="flex-align">
+                <img src="./img/speaker.png" alt="Volume">
+                <span>Volume:</span>
+                <input type="range" min="0" max="100" value="50" class="slider" id="set-wing-volume">
+                <span>50%</span>
+            </div>
+        </div>
+        <div>
             <h2>Controls</h2>
             <h3>The Torso:</h3>
+            <div class="flex-align">
+                <img src="./img/speaker.png" alt="Volume">
+                <span>Volume:</span>
+                <input type="range" min="0" max="100" value="50" class="slider" id="set-wing-volume">
+                <span>50%</span>
+            </div>
+            <div class="flex-align">
+                <img src="./img/brightness.png" alt="Brightness">
+                <span>Brightness:</span>
+                <input type="range" min="0" max="100" value="50" class="slider" id="set-wing-brightness">
+                <span>50%</span>
+            </div>
             <div class="flex-align">
                 <img src="./img/brightness.png" alt="Brightness">
                 <span>Center:</span>
@@ -219,15 +257,31 @@
     </section>
     <section class="">
         <h2>Overwrite Matrix Color:</h2></br>
-        <div class="wrap">
+        <!-- <div class="wrap">
             <div class="half">
                 <div class="colorPicker"></div>
             </div>
-        </div>
+        </div> -->
         <div class="audio-player flex">
-            <div class="file-list" files-found="true">
+            <div class="audiofiles-horizontal" files-found="true">
                 <span class="status-no-files">No Files Found! Check the SD!</span>
-                <a class="button item" selected="false" onclick="playAudio('1');">Sample Audio Track 1</a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+                <a class="button small-icon" selected="false" onclick="playAudio('1');"><img src="./img/audiovisualizer.png" alt="Music Visualizer" title="Music Visualizer"></a>
+            </div>
+            <div class="audiofiles-vertical" files-found="true">
+                <span class="status-no-files">No Files Found! Check the SD!</span>
+                <a class="button item" selected="false" onclick="playAudio('1');">
+                    <img src="./img/audiofile-thumbnail-placeholder.jpg" alt="Thumbnail">
+                    Sample Audio Track 1
+                </a>
                 <a class="button item" selected="false" onclick="playAudio('2');">Sample Audio Track 2</a>
                 <a class="button item" selected="false" onclick="playAudio('3');">Sample Audio Track 3</a>
                 <a class="button item" selected="false" onclick="playAudio('2');">Sample Audio Track 2</a>
@@ -352,7 +406,7 @@
     <script type="module" src="./three.js"></script>
 </body>
 <footer>
-    <span>Welcome to Neondra's control panel v2, powered by an ESP8266!</span>
+    <span>Welcome to Neondra's control panel v2.3, powered by an ESP8266!</span>
     <a onclick="toggleFullScreen();" class="button-fullscreen">
         <img src="./img/fullscreen.png" alt="Go Fullscreen" title="Go Fullscreen">
     </a>

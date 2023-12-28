@@ -1,0 +1,26 @@
+
+
+.audiofile-spikeball
+    position: absolute
+    top: 80%
+    transform: rotateZ(60deg)
+    .item
+        position: absolute
+        width: 500px
+        height: 120px
+        display: flex
+        align-items: center
+        justify-content: space-around
+        @for $i from 0 through 40
+            &:nth-of-type(#{$i})
+                transform: translate(#{$i * 30}px, #{$i * 30}px) rotateZ(#{$i * -8}deg)
+        svg
+            position: absolute
+        .info
+            display: flex
+            align-items: center
+            justify-content: center
+            #info-artist-name
+                &::after
+                    content: '-'
+                    margin: 0 10px

@@ -276,31 +276,57 @@ img {
   padding: 12px;
 }
 
-.file-list {
+.audiofiles-vertical, .audiofiles-horizontal {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  margin: 6px 0;
 }
-.file-list[files-found=false] {
+.audiofiles-vertical[files-found=false], .audiofiles-horizontal[files-found=false] {
   height: 200px;
   align-items: center;
   justify-content: center;
-  overflow-y: hidden;
 }
-.file-list[files-found=false] .item {
+.audiofiles-vertical[files-found=false] .item, .audiofiles-horizontal[files-found=false] .item {
   display: none;
 }
-.file-list[files-found=true] {
+.audiofiles-vertical[files-found=true], .audiofiles-horizontal[files-found=true] {
   height: auto;
   max-height: 312px;
-  overflow-y: scroll;
 }
-.file-list[files-found=true] .status-no-files {
+.audiofiles-vertical[files-found=true] .status-no-files, .audiofiles-horizontal[files-found=true] .status-no-files {
   display: none;
 }
-.file-list .item {
+.audiofiles-vertical .item, .audiofiles-horizontal .item {
   width: 85%;
+}
+
+.audiofiles-vertical {
+  flex-direction: column;
+}
+.audiofiles-vertical[files-found=true] {
+  overflow-y: scroll;
+}
+.audiofiles-vertical[files-found=false] {
+  overflow-y: hidden;
+}
+.audiofiles-vertical .item {
   margin: 2px 0;
+}
+
+.audiofiles-horizontal {
+  flex-direction: row;
+}
+.audiofiles-horizontal > a {
+  flex: 50%;
+}
+.audiofiles-horizontal[files-found=true] {
+  overflow-x: scroll;
+}
+.audiofiles-horizontal[files-found=false] {
+  overflow-x: hidden;
+}
+.audiofiles-horizontal .item {
+  margin: 0 2px;
 }
 
 canvas {

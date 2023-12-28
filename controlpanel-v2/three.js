@@ -6,6 +6,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
 const gltfLoader = new GLTFLoader();
+const raycaster = new THREE.Raycaster();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -97,6 +98,21 @@ document.getElementById('set-wings').addEventListener('change', function (e) {
     targetWingRotation = document.getElementById('set-wings').value;
 });
 
+var mouseEnter = false;
+document.getElementsByTagName('canvas')[0].addEventListener('mouseenter', function () {
+    mouseEnter = true;
+});
+document.getElementsByTagName('canvas')[0].addEventListener('mouseleave', function () {
+    mouseEnter = false;
+});
+
+var intersects = raycaster.intersectObject(scene, true);
+
+if (intersects.length > 0) {
+    var object = intersects[0].object;
+    object.material.color.set( Math.random() * 0xffffff );
+}
+
 function animate() {
     requestAnimationFrame(animate);
     if (leftWing) {
@@ -105,7 +121,7 @@ function animate() {
     if (rightwing) {
         rightwing.rotation.z = THREE.MathUtils.lerp(rightwing.rotation.z, -(targetWingRotation / -78) - 45.1, 0.006);
     }
-    controls.update();
+    if (!mouseEnter) controls.update();
     renderer.render(scene, camera);
 }
 animate();
