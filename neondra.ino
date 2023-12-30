@@ -1,48 +1,12 @@
-/*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^^*^*^*^*^*^*
+/*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^
   Author: Neondra Studio (by "Jentle")
   Project: Project Neondra V1
   Year: 2023
   Website: https://neondra.com/
   Board: Generic ESP8266 Module
-
-  This script is used for the whole suit, if the sections are attached.
-  Otherwise uses just the helmet and allows to control it.
-
-  When speaking, the mouth is animated to look like it opens.
-
-  The Neondra Suit's Modes:
-  - Default: Everything is in default smug state.
-  - Fury: Matrices are red, forehead has an animated yellow warning sign.
-  - Love: Matrices are pink, forehead has an animated heart.
-  - Sad: Matrices are blue, mouth is a frown.
-  - Datetime: The helmet displays date on the headband headband_matrix, and time on the mouth headband_matrix.
-
-  The Neondra Suit's Parts:
-  ## The Helmet:
-  ### Helmet Rings: Original script is "BT_RGB".
-    
-  Torso
-  Left Arm
-  Right Arm
-  Left Leg
-  Right Leg
-  
-  ## The Wings:
-  ### Wings' Brightness:
-  Left Wing and Right Wing have individual brightness controls for .
-  ### Wings' Motor Controls:
-  Left Wing and Right Wing individual controls UP/DOWN [1-100]. Controlled based on duration between moving difference.
-  ## The Tail:
-  The tail is held straight by fishlines and can wiggle from left to right and spring lets the tail jolt up and down.
-  ### The Tail's Brightness:
-  The tail has brightness control for [1-100].
-
-  You can play any .mp3, .acc, . PlayAudio(String file), ie. PlayAudio("test-file-01.mp3");
-  You can display text calling DisplayText(String text), ie. DisplayText("Neondra:Project");
-  ^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*/
-  
+^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*/
 #include <SPI.h>
-// Used by: Datetime & ControlPanel
+// Used by: Datetime & Interface
 #include <Adafruit_GFX.h>
 #include <FastLED.h>
 #include <FastLED_NeoMatrix.h>
@@ -50,19 +14,21 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
-// Used by ControlPanel
+// Used by Interface
 #include <ESP8266WebServer.h>
 #include "control_html_content.h"
-// Modes / "Expressions" (MOUTH, HEADBAND, FOREHEAD, EYE_LEFT, EYE_RIGHT)
+// Modes (MOUTH, HEADBAND, FOREHEAD, EYE_LEFT, EYE_RIGHT)
 #include "mode_default.h"
 #include "mode_fury.h"
 #include "mode_love.h"
+#include "visor_texts.h"
 
-// ControlPanel
-#define USE_CONTROLPANEL true // If you don't want to initialise a remote control webserver.
-const char* SSID = "Jentle";        // CREDENTIALS
-const char* PASSWORD = "jemmu123";  // CREDENTIALS
+// Interface
+#define USE_INTERFACE true // If you don't want to initialise a remote control webserver.
+const char* SSID = "Jentle";
+const char* PASSWORD = "jemmu123";
 
+uint8_t suitMode = 0;
 char BTdata = 0; //Variable for storing received data
 
 // NeoPixel Matrix Settings
@@ -120,6 +86,9 @@ int hours, minutes, seconds;
 
 ESP8266WebServer server(80);
 
+// Spitfire
+const char* SPITFIRE_IP = "192.168.1.54"; // Here goes the IP address of the sword so this board can remotely send it messages...
+
 // Helmet
 CRGB mouth_leds[NUM_MOUTH_LEDS];
 CRGB headband_leds[NUM_HEADBAND_LEDS];
@@ -130,8 +99,9 @@ CRGB earleft_leds[NUM_EAR_LEDS];
 CRGB earright_leds[NUM_EAR_LEDS];
 // Other
 // CRGB torso_leds[];
-// CRGB _leds[];
-// CRGB _leds[];
+// CRGB arm_leds[];
+// CRGB leg_leds[];
+// CRGB wing_leds[];
 // CRGB tail_leds[NUM_TAIL_LEDS];
 
 String headband_text = USE_SECONDS ? "xx:xx:xx" : "xx:xx"; // Placeholder
@@ -187,7 +157,7 @@ bool isWingsAttached() {
   return false;
 }
 
-bool isHandsAttached() {
+bool isClawsAttached() {
   return false;
 }
 
@@ -196,7 +166,13 @@ bool isLegsAttached() {
 }
 
 int getBatteryPercentage() {
-  return 0;
+  int batteryPercentage = 0;
+  /*
+    currentVoltage = ???;
+    maxVoltage = 11.2;
+    batteryPercentage = map(currentVoltage, maxVoltage, 0, 100);
+  */
+  return batteryPercentage;
 }
 
 // Clears all Matrixes and sets their color to 0x112F4B
@@ -233,18 +209,21 @@ void loadFile(const String fileName) {
   SD.open(fileName);
 }
 
-void playAudio(const String playAudioParam) {
+void playAudio(const String fileName) {
   // ...
 }
 
-// Control Panel
+// Interface
 void handleRoot() {
   // If a command has been given
-  if (server.arg("set-visor") != "") {
-    setColor(server.arg("set-visor"));
-  } else if (server.arg("play-audio") != "") {
-    playAudio(server.arg("play-audio"));
-  }
+  // if (server.arg("set-visor") != "") {
+  //   setColor(server.arg("set-visor"));
+  // } else if (server.arg("play-audio") != "") {
+  //   playAudio(server.arg("play-audio"));
+  // }
+
+
+  
   server.send(200, "text/html", HTML_CONTENT);
 }
 
@@ -275,7 +254,7 @@ void initializeLeds() {
     
   }
   // Hands
-  if (isHandsAttached()) {
+  if (isClawsAttached()) {
     
   }
   // Legs
@@ -292,27 +271,45 @@ void initializeLeds() {
   }
 }
 
-void setup(void) {
-  Serial.begin(9600);
-
-  initializeLeds();
-
+void initializeInterface() {
+  if (!USE_INTERFACE) return;
   WiFi.begin(SSID, PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
   Serial.println("\nConnected to WiFi");
-
   // Initialize the web server
   server.on("/", HTTP_GET, handleRoot);
   server.on("/ajax", HTTP_POST, handleAjax);
   server.begin();
   Serial.println("HTTP server started");
-
   // Initialize and synchronize time
   timeClient.begin();
   timeClient.update();
+}
+
+/*
+  Hardware required :
+  * Arduino shield with a SD card on CS4
+  * A sound file named "test.wav" in the root directory of the SD card
+  * An audio amplifier to connect to the DAC0 and ground
+  * A speaker to connect to the audio amplifier
+*/
+void setup(void) {
+  Serial.begin(9600);
+  initializeLeds();
+  initializeInterface();
+
+  // Initialize the SD card
+  Serial.print("Initializing SD card...");
+  if (!SD.begin(4)) { // SD card on CS4
+    Serial.println(" failed!");
+    while(true);
+  }
+  Serial.println("SD card ready!");
+  // 44100kHz stereo => 88200 sample rate
+  AudioZero.begin(2 * 44100);
 }
 
 // Get hours, minutes, and seconds in a clean format, ready to be displayed.
@@ -357,8 +354,37 @@ void headbandDatetimeLoop() {
   headband_matrix->show();
 }
 
+// Checked every 2s
+void checkPartsConnected() {
+  if (PART_CHECK_INTERVAL == 0) return;
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis < PART_CHECK_INTERVAL) return;
+  previousMillis = currentMillis;
+  // CHECK TORSO
+  // CHECK LEFT ARM
+  // CHECK RIGHT ARM
+  // CHECK LEFT LEG
+  // CHECK RIGHT LEG
+  // CHECK WINGS
+  // CHECK TAIL
+  // CHECK SPITFIRE
+}
+
 void loop(void) {
   server.handleClient();
   headbandDatetimeLoop();
+
+  // TEST REMOVE LATER
+  File data = SD.open("test.wav");
+  if (!data) { // if the file didn't open, print an error and stop
+    Serial.println("error opening test.wav");
+    while (true);
+  }
+  Serial.print("Playing");
+  // until the file is not finished
+  AudioZero.play(data);
+  Serial.println("End of file. Thank you for listening!");
+  while (true);
+
   delay(16.66);
 }
