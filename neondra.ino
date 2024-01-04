@@ -3,38 +3,40 @@
   Project: Project Neondra V1
   Year: 2023
   Website: https://neondra.com/
-  Board: Generic ESP8266 Module
+  Components: ESP8266 + DFPlayer Mini
 ^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*/
-#include <SPI.h>
-// Used by: Datetime & Interface
 #include <Adafruit_GFX.h>
 #include <FastLED.h>
 #include <FastLED_NeoMatrix.h>
-#include <SD.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
+
+// Reading the SD
+#include <SPI.h>
+#include <SD.h>
+#include "sd_utils.h"
+#define PIN_SD 4
+// Configuration from the SD
+char* ssid;
+char* password;
+bool use_interface;
+uint8_t suitMode;
+
+char BTdata = 0; // Variable for storing received data
+
 // Used by Interface
 #include <ESP8266WebServer.h>
-#include "control_html_content.h"
-// Modes (MOUTH, HEADBAND, FOREHEAD, EYE_LEFT, EYE_RIGHT)
+#include "interface_html.h"
+
+// Modes (MOUTH, HEADBAND, EYE_LEFT, EYE_RIGHT, FOREHEAD)
 #include "mode_default.h"
+#include "mode_rave.h"
 #include "mode_fury.h"
 #include "mode_love.h"
 #include "visor_texts.h"
 
-// Interface
-#define USE_INTERFACE true // If you don't want to initialise a remote control webserver.
-const char* SSID = "Jentle";
-const char* PASSWORD = "jemmu123";
-
-uint8_t suitMode = 0;
-char BTdata = 0; //Variable for storing received data
-
-// NeoPixel Matrix Settings
-
 /// HELMET ///
-
 //// Mouth Matrix
 #define PIN_MOUTH_LED 2
 #define NUM_MOUTH_LEDS 320
@@ -62,6 +64,7 @@ char BTdata = 0; //Variable for storing received data
 #define SPEED 30
 
 /// TORSO ///
+#define PART_CHECK_INTERVAL 4000 // if > 0, checks all parts which are connected every X ms
 
 //// Left Arm
 //// Right Arm
@@ -87,7 +90,7 @@ int hours, minutes, seconds;
 ESP8266WebServer server(80);
 
 // Spitfire
-const char* SPITFIRE_IP = "192.168.1.54"; // Here goes the IP address of the sword so this board can remotely send it messages...
+const char* SPITFIRE_IP = "192.168.1.54"; // IP address of the sword so this board can remotely send it messages...
 
 // Helmet
 CRGB mouth_leds[NUM_MOUTH_LEDS];
@@ -104,7 +107,7 @@ CRGB earright_leds[NUM_EAR_LEDS];
 // CRGB wing_leds[];
 // CRGB tail_leds[NUM_TAIL_LEDS];
 
-String headband_text = USE_SECONDS ? "xx:xx:xx" : "xx:xx"; // Placeholder
+String headband_text;
 int headband_x = 0;
 int pass = 0;
 unsigned long previousMillis = 0;
@@ -157,6 +160,10 @@ bool isWingsAttached() {
   return false;
 }
 
+bool isTailAttached() {
+  return false;
+}
+
 bool isClawsAttached() {
   return false;
 }
@@ -205,25 +212,24 @@ void setColor(const String colorOverwriteString) {
   // ...
 }
 
-void loadFile(const String fileName) {
-  SD.open(fileName);
+char getFile(const String fileName) {
+  File file = SD.open(fileName);
+  if (!file) return "";
+  Serial.println("Reading from file: " + fileName);
+  char output = "";
+  while (file.available()) {
+    output += file.read();
+  }
+  file.close();
+  return output;
 }
 
 void playAudio(const String fileName) {
-  // ...
+  getFile(fileName);
 }
 
 // Interface
 void handleRoot() {
-  // If a command has been given
-  // if (server.arg("set-visor") != "") {
-  //   setColor(server.arg("set-visor"));
-  // } else if (server.arg("play-audio") != "") {
-  //   playAudio(server.arg("play-audio"));
-  // }
-
-
-  
   server.send(200, "text/html", HTML_CONTENT);
 }
 
@@ -262,7 +268,7 @@ void initializeLeds() {
     
   }
   // Wing
-  if (isWingAttached()) {
+  if (isWingsAttached()) {
     
   }
   // Tail
@@ -272,8 +278,8 @@ void initializeLeds() {
 }
 
 void initializeInterface() {
-  if (!USE_INTERFACE) return;
-  WiFi.begin(SSID, PASSWORD);
+  if (!use_interface) return;
+  WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -289,27 +295,25 @@ void initializeInterface() {
   timeClient.update();
 }
 
-/*
-  Hardware required :
-  * Arduino shield with a SD card on CS4
-  * A sound file named "test.wav" in the root directory of the SD card
-  * An audio amplifier to connect to the DAC0 and ground
-  * A speaker to connect to the audio amplifier
-*/
+void initializeSD() {
+  Serial.print("Initializing SD card...");
+  if (!SD.begin(PIN_SD)) {
+    Serial.println("Error reading SD!");
+    return;
+  }
+  use_interface = ge;
+}
+
 void setup(void) {
   Serial.begin(9600);
+  Serial.println("Starting...");
+
+  // Initialize to get configs from 'config.txt'
+  initializeSD();
+
+  headband_text = USE_SECONDS ? "xx:xx:xx" : "xx:xx";
   initializeLeds();
   initializeInterface();
-
-  // Initialize the SD card
-  Serial.print("Initializing SD card...");
-  if (!SD.begin(4)) { // SD card on CS4
-    Serial.println(" failed!");
-    while(true);
-  }
-  Serial.println("SD card ready!");
-  // 44100kHz stereo => 88200 sample rate
-  AudioZero.begin(2 * 44100);
 }
 
 // Get hours, minutes, and seconds in a clean format, ready to be displayed.
@@ -354,8 +358,7 @@ void headbandDatetimeLoop() {
   headband_matrix->show();
 }
 
-// Checked every 2s
-void checkPartsConnected() {
+void checkPartsConnectedLoop() {
   if (PART_CHECK_INTERVAL == 0) return;
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis < PART_CHECK_INTERVAL) return;
@@ -373,18 +376,6 @@ void checkPartsConnected() {
 void loop(void) {
   server.handleClient();
   headbandDatetimeLoop();
-
-  // TEST REMOVE LATER
-  File data = SD.open("test.wav");
-  if (!data) { // if the file didn't open, print an error and stop
-    Serial.println("error opening test.wav");
-    while (true);
-  }
-  Serial.print("Playing");
-  // until the file is not finished
-  AudioZero.play(data);
-  Serial.println("End of file. Thank you for listening!");
-  while (true);
-
+  checkPartsConnectedLoop();
   delay(16.66);
 }
