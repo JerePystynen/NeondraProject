@@ -1,4 +1,4 @@
-const char* const default_texts[] PROGMEM = {
+const char* const DEFAULT_TEXTS[] PROGMEM = {
     "No google, I do not accept your terms of service.",
     "CODING YOUR OWN TOASTER IS EASIER THAN YOU THINK",
     "Seriously? That's ridiculously.",
@@ -20,8 +20,9 @@ const char* const default_texts[] PROGMEM = {
     "Who is Ro-Bot?",
     "Recognize me yet, Kai?"
 };
-const char* const rave_texts[] PROGMEM = {
+const char* const RAVE_TEXTS[] PROGMEM = {
     "NO REST FOR THE WICKED 😍🔥🔥🔥🔥",
+    "NEON BOY",
     "This is how we do it  Work it",
     "Bang Bang Bang - Pull my devil trigger",
     "LETS BRING THE HEAT 🔥🔥🔥🔥 INFERNO",
