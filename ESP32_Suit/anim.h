@@ -11,11 +11,11 @@
     1      1      0
     1      2      0
 */
-#include "m_default.h"
-#include "m_rave.h"
-#include "m_fury.h"
-#include "m_cute.h"
-#include "m_wake.h"
+#include "normal.h"
+#include "rave.h"
+#include "fury.h"
+#include "cute.h"
+#include "wake.h"
 /*
 class Anim {
   public:

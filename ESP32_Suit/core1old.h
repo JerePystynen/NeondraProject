@@ -1,81 +1,29 @@
 /*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^
-Author: Neondra Studio
-Project: Project Neondra
-Year: 2024
-Source: https://neondra.com/
-
-Components:
-  + ESP8266
-  + DFPlayer Mini
-
-Communication baud rates:
- - DFPlayer Mini 9600
- - Serial 9600
-
-LCD Monitor Wiring definitions:
-  ESP8266   LCD
-  ===================
-  3V3     VCC
-  GND     GND
-  D1      A0 (D/C)
-  D2      CS (CS)
-  RX      RESET (RES)
-  D7      SDA (DIN)
-  D5      SCK (CLK)
-          LED (Open in my test)
+  
+[CORE 1]
+  Communicates with the clients that want to control the suit.
+  Serves a website with settings.
 
 ^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*/
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-#include <ESP8266HTTPClient.h>
-#include <ESP8266mDNS.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_ST7735.h>
-#include <SPI.h>
-#include "SoftwareSerial.h"
-#include "DFRobotDFPlayerMini.h"
-#include <EEPROM.h>
-
-// CONFIGURATION AND STATE DATA SAVING
-
-void writeDataToEEPROM(int address, int data) {
-  EEPROM.begin(512);  // Initialize EEPROM with size
-  EEPROM.put(address, data);
-  EEPROM.commit();     // Save the data to EEPROM
-  EEPROM.end();        // Release EEPROM
-}
-
-int readDataFromEEPROM(int address) {
-  int data;
-  EEPROM.begin(512);
-  EEPROM.get(address, data);
-  EEPROM.end();
-  return data;
-}
 
 /// WEBSERVER
 
-// Wi-Fi Credentials
-const char* stationSSID = "Jentle";
-const char* stationPassword = "jemmu123";
-
 // Access Point Credentials
-const char* apSSID = "Neondra_AP";
-const char* apPassword = "neondra123";
+const char* AP_SSID = "Neondra_AP";
+const char* AP_PASSWORD = "neondra123";
 
-#include "interface_html.h"
 const bool USE_INTERFACE = true;
 
-IPAddress IPaddr (127, 0, 0, 1);
-IPAddress IPmask (255, 255, 255, 0);
+IPAddress IPaddr(127, 0, 0, 1);
+IPAddress IPmask(255, 255, 255, 0);
 
 const bool USE_SECONDS = true;
 int hours, minutes, seconds;
 
 const char* ntpServerName = "pool.ntp.org";
-WiFiUDP udp; // Create an instance of WiFiUDP to send and receive NTP packets
-const long utcOffsetInSeconds = 2 * 60 * 60; // UTC offset in seconds (UTC+2)
-NTPClient timeClient(udp, ntpServerName, utcOffsetInSeconds); // Create an instance of the NTPClient to get time
+WiFiUDP udp;                                                   // Create an instance of WiFiUDP to send and receive NTP packets
+const long utcOffsetInSeconds = 2 * 60 * 60;                   // UTC offset in seconds (UTC+2)
+NTPClient timeClient(udp, ntpServerName, utcOffsetInSeconds);  // Create an instance of the NTPClient to get time
 
 // Get hours, minutes, and seconds in a clean format, ready to be displayed.
 String getUpdatedTimeClientTime() {
@@ -99,37 +47,33 @@ String getUpdatedTimeClientTime() {
   return USE_SECONDS ? (hoursStr + ":" + minutesStr + ":" + secondsStr) : (hoursStr + ":" + minutesStr);
 }
 
-ESP8266WebServer server(80); // Create an instance of the server
+ESP8266WebServer server(80);
 
 /// END WEBSERVER
 
 /// AUDIO PLAYER
 
-//const int DFplayerIN = 12;      // 'D6'
-//const int DFPlayerOUT = 14;     // 'D5'
-//const int DFPlayerBUSYPin = 15; // 'D8'
+const int DFplayerIN = 15;      // 'D8'
+const int DFPlayerOUT = 12;     // 'D6'
+const int DFPlayerBUSYPin = 2;  // 'D4'
 
-const int DFplayerIN = 15;     // 'D8'
-const int DFPlayerOUT = 12;    // 'D6'
-const int DFPlayerBUSYPin = 2; // 'D4'
-
-SoftwareSerial mySoftwareSerial(DFPlayerOUT, DFplayerIN); // RX, TX
+SoftwareSerial mySoftwareSerial(DFPlayerOUT, DFplayerIN);  // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
-uint8_t currentTrack = 1;
+uint8_t current_track = 1;
 const uint8_t TRACKCOUNT = 20;
-bool shouldPlay = true;
-int currentVolume = 8; // Set your default volume level
+bool should_play = true;
+int current_volume = 8;  // Set your default volume level
 const int VOLUME_MAX = 30;
-String currentStatus = "";
-const int VOLUME_THRESHOLD = 50; // Adjust as needed
+String current_status = "";
+const int VOLUME_THRESHOLD = 50;  // Adjust as needed
 
 const int numReadings = 10;
 int readings[numReadings];
 int indexX = 0;
 
 uint8_t currentAnimationFrameIndex = 0;
-unsigned long previousMillis = 0; // will store last time AnimationFrame was updated
+unsigned long previousMillis = 0;  // will store last time AnimationFrame was updated
 const long interval = 1000;
 
 /// END AUDIO PLAYER
@@ -162,7 +106,7 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 int tempSeconds = 0;
 int currentBattery = 100;
-int currentIndex = 0; // TEMP
+int currentIndex = 0;  // TEMP
 
 /// END LCD MONITOR ///
 
@@ -172,7 +116,7 @@ WiFiClient client;
 void messageSpitfire(void) {
   // Wait until the client sends some data
   Serial.println("New client connected");
-  while(!server.client()){
+  while (!server.client()) {
     delay(1);
   }
   HTTPClient http;
@@ -189,7 +133,7 @@ void messageSpitfire(void) {
   http.end();
 }
 
-void initializeInterface() {
+void initializeInterface(void) {
   if (!USE_INTERFACE) return;
   // Connect to the existing Wi-Fi network as a station
   WiFi.hostname("Neondra Suit");
@@ -219,15 +163,15 @@ void initializeInterface() {
   // Start the server
   server.begin();
   MDNS.addService("http", "tcp", 80);
-  
+
   // Initialize and synchronize time
   timeClient.begin();
   timeClient.update();
 }
 
-void setup(void) {
+void SETUP_CORE_1(void) {
   pinMode(DFPlayerBUSYPin, INPUT);
-    
+
   Serial.begin(9600);
   while (!Serial) { ; }
 
@@ -248,7 +192,7 @@ void setup(void) {
   Serial.println("Current volume: " + String(currentVolume));
   myDFPlayer.play(currentTrack);
   */
-  
+
   // LCD MONITOR
   // Initialize the display
   tft.initR(INITR_BLACKTAB);
@@ -258,16 +202,16 @@ void setup(void) {
   tft.setTextColor(ST7735_WHITE);
   tft.setTextSize(1);
   tft.setTextWrap(false);
-  tft.drawRGBBitmap(8, 8, ICON_NEONDRA, 112, 112); // xpos, ypos, array, width, height
+  tft.drawRGBBitmap(8, 8, ICON_NEONDRA, 112, 112);  // xpos, ypos, array, width, height
   // Write the text
   tft.setCursor(24, 122);
   tft.print("NEONDRA ONLINE");
 
   initializeInterface();
-  
+
   // Set up the access point
   Serial.println("Initializing Wi-Fi access point...");
-  WiFi.softAP(apSSID, apPassword);
+  WiFi.softAP(AP_SSID, AP_PASSWORD);
   WiFi.softAPConfig(IPaddr, IPaddr, IPmask);
   IPAddress myIP = WiFi.softAPIP();
   Serial.println("AP IP address: ");
@@ -282,7 +226,7 @@ void setup(void) {
   }
   Serial.println("mDNS responder started");
 
-  
+
 
   // Initialize the array with 0 values
   for (int i = 0; i < numReadings; i++) {
@@ -292,8 +236,8 @@ void setup(void) {
   delay(1000);
   tft.fillScreen(ST7735_BLACK);
   refreshDisplay();
-  
-  delay(1000); // Wait for the BUSY state to change
+
+  delay(1000);  // Wait for the BUSY state to change
 }
 
 // Color the WS2812B strips:
@@ -347,17 +291,18 @@ void refreshDisplay(void) {
 }
 
 void setMicIcon(const uint16_t ICON[]) {
-  tft.drawRGBBitmap(86, 8, ICON, 48, 48); // xpos, ypos, array, width, height
+  tft.drawRGBBitmap(86, 8, ICON, 48, 48);  // xpos, ypos, array, width, height
 }
+
 void setBatteryIcon(const uint16_t ICON[]) {
-  tft.drawRGBBitmap(8, 8, ICON, 80, 48); // xpos, ypos, array, width, height
+  tft.drawRGBBitmap(8, 8, ICON, 80, 48);  // xpos, ypos, array, width, height
 }
 
 void playNext(void) {
   currentTrack++;
   if (currentTrack > TRACKCOUNT) currentTrack = 1;
   myDFPlayer.play(currentTrack);
-  shouldPlay = true;
+  should_play = true;
   currentStatus = "Next";
   Serial.println("DFPlayer: Playing track" + String(currentTrack));
 }
@@ -378,14 +323,14 @@ void handleAjax(void) {
 
 void handlePlay(void) {
   myDFPlayer.start();
-  shouldPlay = true;
+  should_play = true;
   currentStatus = "Playing";
   handleRoot();
 }
 
 void handleStop(void) {
   myDFPlayer.stop();
-  shouldPlay = false;
+  should_play = false;
   currentStatus = "Stopped";
   handleRoot();
 }
@@ -397,15 +342,15 @@ void handlePlayNext(void) {
 
 void handlePlayPrevious(void) {
   myDFPlayer.play(--currentTrack > 0 ? currentTrack : TRACKCOUNT);
-  shouldPlay = true;
+  should_play = true;
   currentStatus = "Previous";
   handleRoot();
 }
 
 void handleVolumeUp(void) {
-  if (currentVolume < VOLUME_MAX) {
-    currentVolume += 5;
-    if (currentVolume > VOLUME_MAX) currentVolume = VOLUME_MAX;
+  if (current_volume < VOLUME_MAX) {
+    current_volume += 5;
+    if (current_volume > VOLUME_MAX) current_volume = VOLUME_MAX;
     myDFPlayer.volume(currentVolume);
   }
   currentStatus = "VolumeUp";
@@ -413,8 +358,8 @@ void handleVolumeUp(void) {
 }
 
 void handleVolumeDown(void) {
-  if (currentVolume > 5) {
-    currentVolume -= 5;
+  if (current_volume > 5) {
+    current_volume -= 5;
     myDFPlayer.volume(currentVolume);
   }
   currentStatus = "VolumeDown";
@@ -422,19 +367,19 @@ void handleVolumeDown(void) {
 }
 
 int getA0Reading(void) {
-  if (!shouldPlay) return 0;
-  
+  if (!should_play) return 0;
+
   int analogValue = analogRead(A0);
 
   // Apply volume factor to the current reading with a threshold, Inverse relationship
-  float volumeFactor = (currentVolume > VOLUME_THRESHOLD) ? (1.0 - float(currentVolume - VOLUME_THRESHOLD) / (VOLUME_MAX - VOLUME_THRESHOLD)) : 1.0;
+  float volumeFactor = (current_volume > VOLUME_THRESHOLD) ? (1.0 - float(current_volume - VOLUME_THRESHOLD) / (VOLUME_MAX - VOLUME_THRESHOLD)) : 1.0;
 
   // 0-200
-  
+
   int weightedReading = int(float(analogValue) * volumeFactor);
 
   readings[indexX] = weightedReading;
-  indexX = (indexX + 1) % numReadings; // circular buffer
+  indexX = (indexX + 1) % numReadings;  // circular buffer
 
   int total = 0;
   for (int i = 0; i < numReadings; i++) {
@@ -445,11 +390,11 @@ int getA0Reading(void) {
   return average;
 }
 
-void loop(void) {
+void LOOP_CORE_1(void) {
   // Handle ongoing mDNS operations
   MDNS.update();
   server.handleClient();
-  
+
   // A 1-second timer without delay
   // if the difference between the current time and last time
   // is bigger than the interval at which you want to update.

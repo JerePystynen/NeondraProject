@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neondra Matrix Drawer</title>
+    <link rel="stylesheet" href="./index.css">
+    <link rel="shortcut icon" href="./favicon.png" type="image/x-icon">
+</head>
+
+<body>
+    <div class="led-matrix-pixel-canvas-container">
+        <div class="controls">
+            <div class="item">
+                <input type="file" id="file-input" accept=".h">
+            </div>
+            <div class="item">
+                <span>Name:</span>
+                <input type="text" name="" value="mode_name" id="matrix-name">
+            </div>
+            <div class="item">
+                <ul>
+                    <li><button class="selected-color-control-button yellow"></button></li>
+                    <li><button class="selected-color-control-button dblue"></button></li>
+                    <li><button class="selected-color-control-button orange"></button></li>
+                    <li><button class="selected-color-control-button cyan"></button></li>
+                    <li><button class="selected-color-control-button blue"></button></li>
+                    <li><button class="selected-color-control-button green"></button></li>
+                    <li><button class="selected-color-control-button white"></button></li>
+                    <li><button class="selected-color-control-button black"></button></li>
+                    <li><button class="selected-color-control-button red"></button></li>
+                    <li><button class="selected-color-control-button pink"></button></li>
+                </ul>
+            </div>
+            <!-- <div class="sizing-controls">
+                <div class="item">
+                    <span>Width:</span>
+                    <input type="number" name="" value="32" min="1" id="matrix-pixel-width">
+                </div>
+                <div class="item">
+                    <span>Height:</span>
+                    <input type="number" name="" value="8" min="1" id="matrix-pixel-height">
+                </div>
+            </div> -->
+            <ul>
+                <li><button class="" onclick="setGrid(0);">Mouth</button></li>
+                <li><button class="" onclick="setGrid(1);">Center</button></li>
+                <li><button class="" onclick="setGrid(2);">Headband</button></li>
+            </ul>
+        </div>
+        <div class="editor-center">
+            <div class="pixels"></div>
+            <ol class="frame-editor" style="max-width: 800px; overflow-x: scroll;">
+                <li class="dropzone" id='0' draggable="true">
+                    <button>-</button>
+                    <span>Frame 0</span>
+                </li>
+                <button class="create-frame-button" draggable="false" style="width: 48px; padding: 24px 32px;">+</button>
+            </ol>
+        </div>
+        <div class="output">
+            <div>
+                <h3>File Output:</h3>
+                <span id="file-output-name">mode_name.h</span>
+                <button onclick="downloadOutput();">Download</button>
+            </div>            
+            <textarea id="file-output-text"></textarea>
+        </div>
+    </div>
+</body>
+
+<script>
+    const drawing = document.getElementsByClassName('led-matrix-pixel-canvas-container')[0];
+    const pixels = drawing.getElementsByClassName('pixels')[0];
+    const fileInput = document.getElementById('file-input');
+
+    var frameCount = 1;
+    const pixelSize = 32 + 4;
+
+    const parts = [
+        {
+            'name': 'mouth',
+            'x': 48,
+            'y': 8
+        },
+        {
+            'name': 'center',
+            'x': 24,
+            'y': 8
+        },
+        {
+            'name': 'headband',
+            'x': 40,
+            'y': 8
+        }
+    ];
+
+    const colors = {
+        'dblue': 0,
+        'yellow': 1,
+        'pink': 2,
+        'red': 3,
+        'black': 4,
+        'white': 5,
+        'orange': 6,
+        'green': 7,
+        'cyan': 8,
+        'blue': 9
+    };
+
+    var selectedFrame = 0;
+    var selectedPart = 0;
+    var selectedColor = "yellow";
+
+    function setPart(part) {
+        selectedPart = part;
+        gridWidth = parts[part].x;
+        gridHeight = parts[part].y;
+    }
+    setPart(0);
+
+    fileInput.addEventListener('change', () => {
+        var file = fileInput.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.readAsText(file, "UTF-8");
+            reader.onload = function (evt) {
+                document.getElementsByClassName('output')[0].children[1].textContent = (evt.target.result);
+            }
+            reader.onerror = function (evt) {
+                alert("error reading file!");
+            }
+        }
+    });
+
+    // Frame Editor Frame Dragging and Dropping
+    const frameEditor = document.getElementsByClassName("frame-editor")[0];
+    var dragged;
+    var id;
+    var index;
+    var indexDrop;
+    var list;
+
+    // Creating new frame
+    const createFrameButton = frameEditor.getElementsByClassName("create-frame-button")[0];
+    frameEditor.getElementsByClassName("create-frame-button")[0].addEventListener("click", ({ target }) => {
+        const el = document.createElement('li');
+        el.classList.add("dropzone");
+        el.setAttribute("id", frameCount);
+        el.setAttribute("draggable", true);
+        const x = frameCount;
+        el.innerHTML = `
+            <button>-</button>
+            <span>Frame ${x}</span>
+        `;
+        el.getElementsByTagName("button")[0].addEventListener("click", (e) => {
+            console.log("Deleted frame " + x);
+            el.remove();
+        });
+        frameEditor.appendChild(el);
+        el.after(createFrameButton);
+        frameCount++;
+    });
+
+    // FOREACH FRAME ELEMENT
+    Array.from(frameEditor.getElementsByClassName("dropzone")).forEach(e => {
+        // SELECTING
+        e.addEventListener("click", ({ target }) => {
+            console.log("Selected frame: " + target.id);
+        });
+    });
+
+    // REORDERING
+    document.addEventListener("dragstart", ({ target }) => {
+        dragged = target;
+        id = target.id;
+        list = target.parentNode.children;
+        for (let i = 0; i < list.length; i += 1) {
+            if (list[i] === dragged) {
+                index = i;
+            }
+        }
+    });
+    document.addEventListener("dragover", (event) => {
+        event.preventDefault();
+    });
+    document.addEventListener("drop", ({ target }) => {
+        if (target.className == "dropzone" && target.id !== id) {
+            dragged.remove(dragged);
+            for (let i = 0; i < list.length; i += 1) {
+                if (list[i] === target) {
+                    indexDrop = i;
+                }
+            }
+            if (index > indexDrop) {
+                target.before(dragged);
+            } else {
+                target.after(dragged);
+            }
+        }
+    });
+
+    function getPixelColorValue(pixel) {
+        return colors[pixel.getAttribute('color')];
+    }
+
+    function getPixelValueColor(value) {
+        return Object.keys(colors).find(key => colors[key] === value);
+    }
+
+    // Selects pixels in a up-to-down, left-to-right snake pattern
+    // Outputs an array of numbers for the selected part
+    // Mouth, Center, Headband all have their own grids
+    function getGridEditorData(part, frameIndex) {
+        var data = [];
+        for (let x = 0; x < part.x; x++) {
+            for (let y = 0; y < part.y; y++) {
+                const pixel = pixels.children[part.y * x + (x % 2 == 0 ? y : part.y - y - 1)];
+                var a = getPixelColorValue(pixel);
+                data.push(a);
+            }
+        }
+        return data;
+    }
+
+    // Selects pixels in a up-to-down, left-to-right snake pattern
+    // Outputs a string for the selected part
+    // Mouth, Center, Headband all have their own grids
+    function getGridOutputData(part, frameIndex, setPart) {
+        var output = '';
+        if (setPart) output += `// Neondra Helmet Visor Matrix Animation\n\n// FRAME ${frameIndex}\n\n`;
+        output += `const uint8_t ${document.getElementById('matrix-name').value}_${part.name}_${frameIndex}[${part.x * part.y}] PROGMEM = {\n`;
+        var px = 0;
+        for (let x = 0; x < part.x; x++) {
+            if (part == parts[1]) {
+                if (x % part.y == 0) {
+                    if (px == 0) output += '    // LEFT EYE\n';
+                    if (px == 1) output += '\n    // FOREHEAD\n';
+                    if (px == 2) output += '\n    // RIGHT EYE\n';
+                    px++;
+                }
+            }
+            for (let y = 0; y < part.y; y++) {
+                const pixel = pixels.children[part.y * x + (x % 2 == 0 ? y : part.y - y - 1)];
+                if (y == 0) output += '    ';
+                output += getPixelColorValue(pixel).toString();
+                if (y == part.y - 1) {
+                    if (x < part.x - 1) output += ',';
+                    output += '\n';
+                } else {
+                    output += ', ';
+                }
+            }
+        }
+        output += '};';
+        return output;
+    }
+    
+    let frameEditorData = [];
+    for (let f = 0; f < frameCount; f++) {
+        var a = [];
+        for (let p = 0; p < parts.length; p++) {
+            var b = [];
+            for (let x = 0; x < parts[p].x * parts[p].y; x++) b.push(0);
+            a.push(b);
+        }
+        frameEditorData.push(a);
+    }
+    
+    updateGrid(parts[selectedPart].x, parts[selectedPart].y);
+
+    let frameOutputData = [];
+    for (let f = 0; f < frameCount; f++) {
+        var a = [];
+        for (let p = 0; p < parts.length; p++) a.push(getGridOutputData(parts[p], 0, p == 0));
+        frameOutputData.push(a);
+    }
+
+    // Adds all of the frames and parts together
+    // for a concise output file that can be easily downloaded.
+    function updateOutputTotal() {
+        var o = '';
+        for (let f = 0; f < frameCount; f++) {
+            var d = '';
+            for (let p = 0; p < parts.length; p++) {
+                if (p > 0) d += '\n\n';
+                d += frameOutputData[selectedFrame][p];
+            }
+            o += d;
+        }
+        document.getElementById('file-output-text').textContent = o;
+    }
+
+    var mouseHeldDown = false;
+    window.addEventListener('pointerdown', (e) => { mouseHeldDown = true; });
+    window.addEventListener('pointerup', (e) => { mouseHeldDown = false; });
+
+    function updateGrid(width, height) {
+        pixels.style.width = `${width * pixelSize}px`;
+        pixels.style.maxWidth = `${Math.round((window.innerWidth - 40) / pixelSize) * pixelSize}px`;
+        pixels.style.height = `${height * pixelSize + 18}px`; // + scroll bar
+        pixels.innerHTML = '';
+
+        for (let x = 0; x < width; x++) {
+            for (let y = 0; y < height; y++) {
+                const pixel = document.createElement('pixel');
+                pixels.appendChild(pixel);
+                const color = getPixelValueColor(frameEditorData[selectedFrame][selectedPart][height * x + (x % 2 == 0 ? y : height - y - 1)]);
+                pixel.setAttribute('color', color);
+                pixel.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    if (pixel.getAttribute('color') == selectedColor) pixel.setAttribute('color', 'dblue');
+                    else pixel.setAttribute('color', selectedColor);
+                    frameEditorData[selectedFrame][selectedPart] = getGridEditorData(parts[selectedPart], selectedFrame);
+                    frameOutputData[selectedFrame][selectedPart] = getGridOutputData(parts[selectedPart], selectedFrame, selectedPart == 0);
+                    updateOutputTotal();
+                });
+                pixel.addEventListener('mouseenter', (e) => {
+                    if (!mouseHeldDown) return;
+                    e.preventDefault();
+                    if (pixel.getAttribute('color') == selectedColor) pixel.setAttribute('color', 'dblue');
+                    else pixel.setAttribute('color', selectedColor);
+                    frameEditorData[selectedFrame][selectedPart] = getGridEditorData(parts[selectedPart], selectedFrame);
+                    frameOutputData[selectedFrame][selectedPart] = getGridOutputData(parts[selectedPart], selectedFrame, selectedPart == 0);
+                    updateOutputTotal();
+                });
+            }
+        }
+    }
+    
+    document.getElementById('matrix-name').addEventListener('input', function (e) {
+        updateOutputTotal();
+    });
+    
+    // document.getElementById('matrix-pixel-width').addEventListener('input', function (e) {
+    //     gridWidth = this.value;
+    //     updateGrid(gridWidth, gridHeight);
+    // });
+    // document.getElementById('matrix-pixel-height').addEventListener('input', function (e) {
+    //     gridHeight = this.value;
+    //     updateGrid(gridWidth, gridHeight);
+    // });
+    
+    Array.from(document.getElementsByClassName('selected-color-control-button')).forEach((button) => {
+        button.addEventListener('click', function (e) {
+            selectedColor = button.classList[1];
+        });
+    });
+
+    window.onresize = function () {
+        updateGrid(parts[selectedPart].x, parts[selectedPart].y);
+    }
+
+    function setGrid(partIndex) {
+        selectedPart = partIndex;
+        updateGrid(parts[selectedPart].x, parts[selectedPart].y);
+    }
+
+    function downloadOutput() {
+        const content = document.getElementById('file-output-text').textContent;
+        // Create a link element
+        const link = document.createElement('a');
+        // Set the href attribute of the link to the URL of the Blob
+        link.href = URL.createObjectURL(new Blob([content], { type: 'c' }));
+        // Set the download attribute of the link to the desired file name
+        link.download = document.getElementById('file-output-name').textContent;
+        // Append the link to the document body
+        document.body.appendChild(link);
+        // Simulate a click on the link to trigger the download
+        link.click();
+        // Remove the link from the document body
+        document.body.removeChild(link);
+        // Revoke the URL to release the resources
+        //URL.revokeObjectURL(url);
+    }
+</script>
+
+</html>

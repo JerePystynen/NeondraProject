@@ -18,7 +18,10 @@ const char* const DEFAULT_TEXTS[] PROGMEM = {
     "This is an example of ultimate evolution :)",
     "Im not a bot, I'm codingly dynamic",
     "Who is Ro-Bot?",
-    "Recognize me yet, Kai?"
+    "Recognize me yet, Kai?",
+    "404 Uwu not found",
+    "UWU",
+    "What's this?"
 };
 const char* const RAVE_TEXTS[] PROGMEM = {
     "NO REST FOR THE WICKED 😍🔥🔥🔥🔥",

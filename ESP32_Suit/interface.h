@@ -38,25 +38,25 @@ const char HTML_CONTENT[] PROGMEM = R"KEWL(
   <span>Now playing: -</span>
   
   <h2>Set What Helmet Matrices Display:</h2>
-  <a href="/?set-visor=default/">DEFAULT</a>
-  <a href="/?set-visor=wink/">WINK</a>
-  <a href="/?set-visor=love/">LOVE</a>
-  <a href="/?set-visor=sad/">SAD</a>
-  <a href="/?set-visor=fury/">FURY</a>
-  <a href="/?set-visor=vumeter">Display Music Visualizer</a>
-  <a href="/?set-visor=datetime">Display Datetime</a>
-  <a href="/?set-visor=subcount">Display Subcount</a>
-  <a href="/?set-animation-playstate=true">Play Animation</a>
-  <a href="/?set-animation-playstate=false">Stop Animation</a>
+  <a href="/set-visor=default/">DEFAULT</a>
+  <a href="/set-visor=wink/">WINK</a>
+  <a href="/set-visor=love/">LOVE</a>
+  <a href="/set-visor=sad/">SAD</a>
+  <a href="/set-visor=fury/">FURY</a>
+  <a href="/set-visor=vumeter">Display Music Visualizer</a>
+  <a href="/set-visor=datetime">Display Datetime</a>
+  <a href="/set-visor=subcount">Display Subcount</a>
+  <a href="/set-animation-playstate=true">Play Animation</a>
+  <a href="/set-animation-playstate=false">Stop Animation</a>
   <h2>Set Matrix Color:</h2></br>
-  <a href="/?set-visor=0000FF">Set Blue</a>
-  <a href="/?set-visor=00FF00">Set Green</a>
-  <a href="/?set-visor=FF0000">Set Red</a>
+  <a href="/set-visor=0000FF">Set Blue</a>
+  <a href="/set-visor=00FF00">Set Green</a>
+  <a href="/set-visor=FF0000">Set Red</a>
   <h2>Play Audio:</h2>
-  <a href="/?play-audio=1">Play Audio 1</a>
-  <a href="/?play-audio=2">Play Audio 2</a>
-  <a href="/?play-audio=3">Play Audio 3</a>
-  <a href="/?play-audio=0">Stop Playing</a>
+  <a href="/play">Play Audio</a>
+  <a href="/playnext">Play Next</a>
+  <a href="/playprevious">Play Previous</a>
+  <a href="/stop">Stop Playing</a>
 </body>
 </html>
 )KEWL";

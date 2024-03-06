@@ -1,0 +1,166 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #071416;
+  color: #fff;
+  position: relative;
+}
+
+li {
+  list-style: none;
+}
+
+.led-matrix-pixel-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.led-matrix-pixel-canvas-container .pixels {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  margin: 0 24px;
+  overflow-x: scroll;
+  overflow-y: clip;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.led-matrix-pixel-canvas-container .pixels pixel {
+  width: 32px;
+  height: 32px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  background-color: #112F4B;
+  filter: brightness(0.8);
+}
+.led-matrix-pixel-canvas-container .pixels pixel:hover {
+  filter: brightness(1);
+}
+.led-matrix-pixel-canvas-container .pixels pixel[color=orange] {
+  background-color: orange;
+}
+.led-matrix-pixel-canvas-container .pixels pixel[color=cyan] {
+  background-color: cyan;
+}
+.led-matrix-pixel-canvas-container .pixels pixel[color=blue] {
+  background-color: blue;
+}
+.led-matrix-pixel-canvas-container .pixels pixel[color=green] {
+  background-color: green;
+}
+.led-matrix-pixel-canvas-container .pixels pixel[color=white] {
+  background-color: white;
+}
+.led-matrix-pixel-canvas-container .pixels pixel[color=yellow] {
+  background-color: #E4E03C;
+}
+.led-matrix-pixel-canvas-container .pixels pixel[color=black] {
+  background-color: black;
+}
+.led-matrix-pixel-canvas-container .pixels pixel[color=red] {
+  background-color: red;
+}
+.led-matrix-pixel-canvas-container .pixels pixel[color=pink] {
+  background-color: pink;
+}
+.led-matrix-pixel-canvas-container .controls {
+  position: relative;
+  margin: 18px;
+  display: flex;
+  padding: 12px;
+  height: -moz-fit-content;
+  height: fit-content;
+  background-color: #17253a;
+  border-radius: 32px;
+}
+.led-matrix-pixel-canvas-container .controls span {
+  color: #fff;
+  font-size: 18px;
+  font-family: sans-serif;
+}
+.led-matrix-pixel-canvas-container .controls ul {
+  display: flex;
+}
+.led-matrix-pixel-canvas-container .controls button {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+}
+.led-matrix-pixel-canvas-container .controls button.dblue {
+  background-color: #112F4B;
+}
+.led-matrix-pixel-canvas-container .controls button.orange {
+  background-color: orange;
+}
+.led-matrix-pixel-canvas-container .controls button.cyan {
+  background-color: cyan;
+}
+.led-matrix-pixel-canvas-container .controls button.blue {
+  background-color: blue;
+}
+.led-matrix-pixel-canvas-container .controls button.green {
+  background-color: green;
+}
+.led-matrix-pixel-canvas-container .controls button.white {
+  background-color: white;
+}
+.led-matrix-pixel-canvas-container .controls button.yellow {
+  background-color: #E4E03C;
+}
+.led-matrix-pixel-canvas-container .controls button.black {
+  background-color: black;
+}
+.led-matrix-pixel-canvas-container .controls button.red {
+  background-color: red;
+}
+.led-matrix-pixel-canvas-container .controls button.pink {
+  background-color: pink;
+}
+.led-matrix-pixel-canvas-container .output {
+  position: relative;
+  width: 330px;
+  height: -moz-fit-content;
+  height: fit-content;
+  right: 12px;
+}
+.led-matrix-pixel-canvas-container .output div {
+  display: flex;
+  justify-content: space-between;
+}
+.led-matrix-pixel-canvas-container .output textarea {
+  width: 100%;
+  height: 200px;
+  background-color: #17253a;
+  resize: none;
+  color: #fff;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.led-matrix-pixel-canvas-container .frame-editor {
+  width: calc(100% - 330px);
+  display: flex;
+  margin-top: 12px;
+}
+.led-matrix-pixel-canvas-container .frame-editor li {
+  width: 48px;
+  height: 48px;
+  margin-right: 8px;
+  padding: 12px;
+  background-color: #17253a;
+  border-radius: 12px;
+}
