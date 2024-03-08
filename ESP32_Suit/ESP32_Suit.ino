@@ -12,6 +12,7 @@
   and control of WS2812B LED Matrices and rings.
 
 ^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*/
+#include <EEPROM.h>
 
 void writeDataToEEPROM(int address, int data) {
   EEPROM.begin(512);          // Initialize EEPROM with size
@@ -68,31 +69,15 @@ void setup(void) {
 }
 
 void core0_task(void* pvParameters) {
-
-  // Setup for core0.h
   SETUP_CORE_0();
-
-  Serial.print("Core0Task running on core ");
-  Serial.println(xPortGetCoreID());
-
-  for (;;) {
-    LOOP_CORE_0();
-    delay(1000);
-  }
+  Serial.print("Core0Task running on core " + xPortGetCoreID());
+  for (;;) LOOP_CORE_0();
 }
 
 void core1_task(void* pvParameters) {
-
-  // Setup for core1.h
   SETUP_CORE_1();
-
-  Serial.print("Core1Task running on core ");
-  Serial.println(xPortGetCoreID());
-
-  for (;;) {
-    LOOP_CORE_1();
-    delay(500);
-  }
+  Serial.print("Core1Task running on core " + xPortGetCoreID());
+  for (;;) LOOP_CORE_1();
 }
 
 void loop(void) {

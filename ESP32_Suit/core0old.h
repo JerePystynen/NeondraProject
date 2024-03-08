@@ -104,41 +104,12 @@ DEFINE_GRADIENT_PALETTE( example_gp ) {
 
 CRGBPalette16 myPal = example_gp;
 
-//// Helmet CRGB Arrays
-CRGB leds_mouth[NUM_MOUTH_LEDS];
-CRGB leds_eyes[NUM_EYES_LEDS];
-CRGB leds_headband[NUM_HEADBAND_LEDS];
-CRGB leds_earleft[NUM_EARS_LEDS];
-CRGB leds_ears[NUM_EARS_LEDS];
 
-/// TORSO ///
-
-//// Shoulder Ring Strips 2x 24
-// CRGB torso_leds[];
-
-//// Insignia 4
-
-/// OTHER ///
-
-//// Claws
-// CRGB leds_claws[];
-
-//// Legs
-//// Wings
-//// Tail
-
-//// Other CRGB Arrays
-
-
-// CRGB leg_leds[];
-// CRGB wing_leds[];
-// CRGB tail_leds[NUM_TAIL_LEDS];
 
 /// Scrolling Text
 
 unsigned long previous_ms = 0;
 uint8_t animationFrame = 0;
-
 uint8_t selectedMode = 0;
 
 bool isAnimatingMouth = false;

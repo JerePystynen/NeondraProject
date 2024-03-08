@@ -157,4 +157,5 @@ void LOOP_CORE_1(void) {
   // Handle ongoing mDNS operations
   //MDNS.update();
   server.handleClient();
+  delay(100);
 }
