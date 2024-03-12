@@ -68,7 +68,7 @@ void handlePlayNext(void) {
 }
 
 void handlePlayPrevious(void) {
-  df_player_mini.play(--current_track > 0 ? current_track : TRACKCOUNT);
+  df_player_mini.play(--current_track > 0 ? current_track : COUNT_TRACKS);
   should_play = true;
   current_status = "Previous";
   handleRoot();

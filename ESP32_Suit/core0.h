@@ -55,61 +55,50 @@ DFPlayer Mini Tracks:
 
 /// ULTRA-SONIC BOOP SENSOR ///
 
-/*
-  Modified code of Ultrasonic Sensor HC-SR04 and Arduino Tutorial
-  by Dejan Nedelkovski, https://www.howtomechatronics.com
-*/
-const uint8_t trigPin = 0;
-const uint8_t echoPin = 4;
-long duration;
-int distance;
+bool is_playing_boop_animation;
 
-void setupBoopSensor(void) {
-  pinMode(trigPin, OUTPUT);  // Sets the trigPin as an Output
-  pinMode(echoPin, INPUT);   // Sets the echoPin as an Input
-  Serial.begin(9600);        // Starts the serial communication
+void play_boop_animation(void) {
+  is_playing_boop_animation = true;
+  delay(3000);
+  is_playing_boop_animation = false;
 }
 
-bool readBoopSensor(void) {
-  // Clears the trigPin
-  digitalWrite(trigPin, LOW);
+void read_boop_sensor(void) {
+  if (is_playing_boop_animation) return;
+  digitalWrite(PIN_ULTRASONIC_TRIGGER, LOW);  // Clears the PIN_ULTRASONIC_TRIGGER
   delayMicroseconds(2);
-  // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(PIN_ULTRASONIC_TRIGGER, HIGH);  // Sets the trigger pin HIGH for 10 micro seconds
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  // Reads the echoPin, returns the sound wave travel time in microseconds
-  duration = pulseIn(echoPin, HIGH);
-  // Calculating the distance
-  distance = duration * 0.034 / 2;
-  // Prints the distance on the Serial Monitor
-  Serial.print("Distance: ");
-  Serial.println(distance);
-  if (distance < 10) {
-    Serial.println("Boop!");
-    delay(2000);
-    return true;
+  digitalWrite(PIN_ULTRASONIC_TRIGGER, LOW);
+  long duration = pulseIn(PIN_ULTRASONIC_ECHO, HIGH);  // Reads the echo pin, returns the sound wave travel time in microseconds
+  int distance = duration * 0.034 / 2;                 // Calculating the distance
+  // Serial.print("Distance: " + String(distance) + "\n"); // Prints the distance on the Serial Monitor
+  if (distance > 0 && distance < 14) {
+    Serial.print("\nBoop! Playing 'Snoot Boop Animation'!");
+    play_boop_animation();
   }
-  return false;
 }
 
-void loopBoopSensor(void) {
-  bool isBoopDetected = readBoopSensor();
-}
+/// END ULTRA-SONIC BOOP SENSOR ///
+
+/// RESISTOR NETWORK ///
+
+/// END RESISTOR NETWORK ///
+
+/// WING MOTOR ///
+
+/// END WING MOTOR ///
 
 /// DFPLAYER MINI ///
 
 #include <SoftwareSerial.h>
 #include <DFRobotDFPlayerMini.h>
 
-const byte RXD2 = 16;  // GPIO16 => Module's RX
-const byte TXD2 = 17;  // GPIO17 => Module's TX
-
 HardwareSerial df_sd(1);  // Use UART channel 1
 DFRobotDFPlayerMini df_player_mini;
 
 uint8_t current_track = 1;
-const uint8_t TRACKCOUNT = 20;
+const uint8_t COUNT_TRACKS = 20;
 bool should_play = true;
 int current_volume = 8;  // Set your default volume level
 const int VOLUME_MAX = 30;
@@ -118,7 +107,7 @@ const int VOLUME_THRESHOLD = 50;  // Adjust as needed
 
 void playNext(void) {
   current_track++;
-  if (current_track > TRACKCOUNT) current_track = 1;
+  if (current_track > COUNT_TRACKS) current_track = 1;
   df_player_mini.play(current_track);
   should_play = true;
   current_status = "Next";
@@ -133,12 +122,9 @@ void playNext(void) {
 #include <Adafruit_ST7735.h>
 
 #include "icons.h"
-#define TFT_CS 5
-#define TFT_RST 4
-#define TFT_DC 2
 
 // Create an instance of the display
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+Adafruit_ST7735 tft = Adafruit_ST7735(PIN_LCD_CS, PIN_LCD_DC, PIN_LCD_RST);
 
 void set_lcd_screen(void) {
   tft.initR(INITR_BLACKTAB);
@@ -234,13 +220,30 @@ CRGB leds_other[0];
 
 // Setup
 
+#include "Arduino.h"
+#include <ESP32AnalogRead.h>
+ESP32AnalogRead adc;
+
 void SETUP_CORE_0(void) {
+
+  // Initialize the Change Audio Bitrate Button
+
+  pinMode(PIN_BUTTON_CHANGE_AUDIO_BITRATE, OUTPUT);
+
+  // Initialize the audio input analyzation
+
+  adc.attach(33);
+
+  // Initialize the Ultra Sonic Boop-the-snoot Sensor
+
+  pinMode(PIN_ULTRASONIC_TRIGGER, OUTPUT);  // Sets the PIN_ULTRASONIC_TRIGGER as an Output
+  pinMode(PIN_ULTRASONIC_ECHO, INPUT);      // Sets the PIN_ULTRASONIC_ECHO as an Input
 
   // Set up communication with the DFPlayer Mini and
   // tell the DFPlayer Mini to start playing "PS1 starting up sound effect"
   // while also setting up the communication with the 128x128 LCD.
 
-  df_sd.begin(9600, SERIAL_8N1, RXD2, TXD2);  // 16, 17
+  df_sd.begin(9600, SERIAL_8N1, PIN_DFPLAYER_RX, PIN_DFPLAYER_TX);  // 16, 17
   while (!df_sd) { ; }
   Serial.println(F("Initializing DFPlayer Mini..."));
   if (!df_player_mini.begin(df_sd, true, true)) {
@@ -257,7 +260,7 @@ void SETUP_CORE_0(void) {
   set_lcd_screen();
 
   FastLED.setBrightness(14);
-  FastLED.addLeds<WS2812B, 0, GRB>(leds_helmet, PIXEL_COUNT);
+  FastLED.addLeds<WS2812B, PIN_HELMET_MATRIX, GRB>(leds_helmet, PIXEL_COUNT);
 
   delay(1000);  // Wait for the BUSY state to change
 }
@@ -265,10 +268,18 @@ void SETUP_CORE_0(void) {
 // Loop
 
 void LOOP_CORE_0(void) {
-  set_matrix(leds_helmet, neondra_normal_1, 112);  // 48 + 24 + 40
+  /*set_matrix(leds_helmet, neondra_normal_1, 112);  // 48 + 24 + 40
   delay(2000);
   set_matrix(leds_helmet, neondra_normal_2, 112);  // 48 + 24 + 40
   delay(2000);
   set_matrix(leds_helmet, neondra_normal_3, 112);  // 48 + 24 + 40
-  delay(2000);
+  delay(2000);*/
+
+  float val = adc.readVoltage(); // 1.66 V average
+  val = val - 1.65;
+  if (val < 0) val = val * -1;
+  Serial.println(val);
+
+  read_boop_sensor();
+  delay(300);
 }
