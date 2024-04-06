@@ -1,0 +1,176 @@
+.controls-container {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 10px;
+}
+
+.sliders, .radios {
+  width: 100%;
+  display: flex;
+}
+
+.sexy-slider {
+  position: relative;
+  margin: auto;
+  width: 64px;
+  height: 320px;
+  display: flex;
+  justify-content: center;
+  background-color: #183253;
+  border-radius: 38px 38px 28px 28px;
+  overflow: hidden;
+  border: 2px solid #8296da;
+  box-shadow: 0 0 0.5em #8296da, 2px 2px 8px #1e1e27;
+  outline: 2px #505069 solid;
+  transition: outline 0.12s ease-out;
+}
+.sexy-slider:hover {
+  outline: 2px #abb0d3 solid;
+}
+.sexy-slider:hover > .sliding-element {
+  background-color: #8296da;
+}
+.sexy-slider .sliding-element {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  min-height: 12%;
+  bottom: 0;
+  background-color: #405c89;
+  box-shadow: inset 0 0 0.25em #8296da;
+  border-radius: 28px 28px 20px 20px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  pointer-events: none;
+  transition: background-color 0.1s ease-out;
+}
+.sexy-slider .sliding-element::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  height: 4px;
+  width: 60%;
+  border-radius: 2px;
+  background-color: rgba(255, 204, 255, 0.8);
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 1px 2px 4px #35393a;
+}
+.sexy-slider input {
+  position: absolute;
+  width: 320px;
+  height: 64px;
+  top: 50%;
+  transform: translateY(-50%) rotateZ(-90deg);
+  opacity: 0;
+}
+.sexy-slider span {
+  color: #fff;
+  margin-bottom: 8px;
+  align-self: end;
+  font-family: Poppins, sans-serif;
+  z-index: 1;
+  font-size: 120%;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  pointer-events: none;
+}
+.sexy-slider h4 {
+  position: absolute;
+  z-index: 1;
+  top: 56%;
+  left: 50%;
+  transform: translateX(-50%) rotateZ(90deg);
+  white-space: nowrap;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  pointer-events: none;
+}
+
+.sexy-radio, .sexy-radio-6 {
+  position: relative;
+  margin: auto 6px;
+  width: 230px;
+  height: 68px;
+  background-color: #183253;
+  border-radius: 42px;
+  overflow: hidden;
+  border: 2px solid #6778b3;
+  box-shadow: 0 0 0.5em #8296da, 2px 2px 8px #1e1e27;
+  outline: 1px #505069 solid;
+  transition: outline 0.12s ease-out;
+}
+.sexy-radio:hover, .sexy-radio-6:hover {
+  outline: 2px #abb0d3 solid;
+}
+.sexy-radio:hover::before, .sexy-radio-6:hover::before {
+  background-color: #8296da;
+}
+.sexy-radio input, .sexy-radio-6 input {
+  width: 33.33%;
+  opacity: 0;
+}
+.sexy-radio div, .sexy-radio-6 div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+.sexy-radio span, .sexy-radio-6 span {
+  width: 33.33%;
+  font-family: Poppins, sans-serif;
+  color: white;
+  text-align: center;
+  align-self: center;
+}
+.sexy-radio[value="1"]::before, .sexy-radio-6[value="1"]::before {
+  transform: translateX(0%);
+}
+.sexy-radio[value="2"]::before, .sexy-radio-6[value="2"]::before {
+  transform: translateX(100%);
+}
+.sexy-radio[value="3"]::before, .sexy-radio-6[value="3"]::before {
+  transform: translateX(200%);
+}
+.sexy-radio::before, .sexy-radio-6::before {
+  content: "";
+  position: absolute;
+  width: 33.33%;
+  background-color: #405c89;
+  box-shadow: inset 0 0 0.25em #6577b0;
+  height: 100%;
+  border-radius: 42px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  pointer-events: none;
+  transition: transform 0.4s ease-in-out, background-color 0.1s ease-out;
+}
+.sexy-radio.wide, .sexy-radio-6.wide {
+  width: 100%;
+}
+.sexy-radio.wide[value="4"]::before, .sexy-radio-6.wide[value="4"]::before {
+  transform: translateX(300%);
+}
+.sexy-radio.wide[value="5"]::before, .sexy-radio-6.wide[value="5"]::before {
+  transform: translateX(400%);
+}
+.sexy-radio.wide[value="6"]::before, .sexy-radio-6.wide[value="6"]::before {
+  transform: translateX(500%);
+}
+.sexy-radio.wide input, .sexy-radio.wide::before, .sexy-radio-6.wide input, .sexy-radio-6.wide::before {
+  width: 16.66%;
+}
+
+.sexy-music-player {
+  margin-left: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 18px;
+  right: 0;
+}

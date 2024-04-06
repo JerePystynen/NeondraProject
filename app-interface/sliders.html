@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFPlayer Mini Control</title>
+    <link rel="stylesheet" href="./sliders.css">
+    <link rel="stylesheet" href="./audioplayer.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
+    <script src="./audioplayer.js" defer></script>
+</head>
+
+<body>
+
+    <div class="controls-container">
+        <div class="sliders" style="display: flex;">
+            <!-- 1x Whole Suit Brightness slider -->
+            <div class="sexy-slider">
+                <input type="range" name="" id="" min="0" max="100" value="50">
+                <div class="sliding-element"></div>
+                <span class="value">50%</span>
+                <h4>Suit Brightness</h4>
+            </div>
+            <!-- 1x Volume slider -->
+            <div class="sexy-slider">
+                <input type="range" name="" id="" min="0" max="100" value="50">
+                <div class="sliding-element"></div>
+                <span class="value">50%</span>
+                <h4>Suit Volume</h4>
+            </div>
+            <!-- 1x Empty slider -->
+            <div class="sexy-slider">
+                <input type="range" name="" id="" min="0" max="100" value="50">
+                <div class="sliding-element"></div>
+                <span class="value">50%</span>
+                <h4>Empty Slider</h4>
+            </div>
+            <!-- 1x Wing Position slider -->
+            <div class="sexy-slider">
+                <input type="range" name="" id="" min="0" max="100" value="50">
+                <div class="sliding-element"></div>
+                <span class="value">50%</span>
+                <h4>Wing Position</h4>
+            </div>
+        </div>
+        <div class="radios">
+            <!-- Set Mic: Off, Modulated Playback, Normal Playback -->
+            <div class="sexy-radio">
+                <div>
+                    <span>Off</span>
+                    <span>Dragon</span>
+                    <span>Normal</span>
+                </div>
+                <div>
+                    <input type="radio" value="1">
+                    <input type="radio" value="2">
+                    <input type="radio" value="3">
+                </div>
+            </div>
+            <!-- Set Fan speed: Off, Slow, Fast -->
+            <div class="sexy-radio">
+                <div>
+                    <span>Off</span>
+                    <span>Slow</span>
+                    <span>Fast</span>
+                </div>
+                <div>
+                    <input type="radio" value="1">
+                    <input type="radio" value="2">
+                    <input type="radio" value="3">
+                </div>
+            </div>
+            
+        </div>
+        <!-- Set color theme: Default, Rave, Happy, Cute, Angry, Swag -->
+        <div class="sexy-radio wide" style="position: absolute; left: 50%; bottom: 2%; transform: translateX(-50%);">
+            <div>
+                <span>Default</span>
+                <span>Rave</span>
+                <span>Happy</span>
+                <span>Cute</span>
+                <span>Angry</span>
+                <span>Swag</span>
+            </div>
+            <div>
+                <input type="radio" value="1">
+                <input type="radio" value="2">
+                <input type="radio" value="3">
+                <input type="radio" value="4">
+                <input type="radio" value="5">
+                <input type="radio" value="6">
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="container sexy-music-player">
+        <div class="audio-player">
+            <div class="img">
+                <img src="img/one.jpg" alt="">
+            </div>
+            <div class="audio-name">
+                <h1>4am - KaizanBlue</h1>
+            </div>
+            <nav>
+                <button class="backwardBtn">
+                    <i class="fas fa-backward"></i>
+                    <!-- its there but the color for all the elements is white -->
+                </button>
+                <button class="playBtn">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="forwardBtn">
+                    <i class="fas fa-forward"></i>
+                </button>
+                <button class="musicListBtn">
+                    <i class="fas fa-list"></i>
+                </button>
+            </nav>
+            <div class="bar">
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <audio src="audio/4am - KaizanBlu.mp3"></audio>
+                <div class="time">
+                    <p class="audioCurrentTime">00:00</p>
+                    <p class="fullLength">00:00</p>
+                </div>
+            </div>
+        </div>
+        <div class="music-list">
+            <nav>
+                <button class="disabled">
+                    <i class="fas fa-list"></i>
+                    Music List
+                </button>
+                <button class="xBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </nav>
+            <div class="list">
+                <div class="item-container">
+                    <div class="item">
+                        <div class="coverImg">
+                            <img src="img/one.jpg" alt="">
+                        </div>
+                        <div class="info">
+                            <h3>4am - KaizanBlue</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- like this  -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /// SLIDERS
+        // Set each Slider
+        Array.from(document.getElementsByClassName('sexy-slider')).forEach(element => {
+            element.getElementsByTagName('input')[0].oninput = function (event) {
+                element.children[1].style.height = `${this.value }%`;
+                element.children[2].innerText = `${this.value}%`;
+            }
+        });
+        // Set each Radio
+        Array.from(document.getElementsByClassName('sexy-radio')).forEach(element => {
+            Array.from(element.getElementsByTagName('input')).forEach(radio => {
+                radio.onclick = function (event) {
+                    element.setAttribute('value', radio.value);
+                }
+            });
+        });
+        /// END SLIDERS
+    </script>
+
+</body>
+
+</html>
