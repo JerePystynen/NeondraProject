@@ -1,0 +1,35 @@
+[ LEFT HAND POTENTIOMETERS: ]
+
+Music Volume
+SFX Volume
+Wing Position
+
+[ RIGHT HAND POTENTIOMETERS: ]
+
+Helmet Brightness
+Suit Brightness
+Wing Brightness
+
+[ LEFT HAND BUTTONS: ]
+
+G1 Mood1 - Default: chill music, smug face :)
+G2 Mood2 - Playful: liquid dnb, :D
+G3 Mood3 - Serious: phonk, >:)
+G4 Mood4 - Hype: party music, let's go face XD
+G5 Anim1 - Depends on Mood: general happy
+G6 Anim2 - Depends on Mood: wow
+G7 Anim3 - Depends on Mood: angry, cry, rainbow puke
+G8 Anim4 - Depends on Mood: sunglasses, star eyes
+G9 Neon Explosion (All LEDs start doing a full-bright loop) 
+
+[ RIGHT HAND BUTTONS: ]
+
+F10 Mic toggle
+F11 Play Elevator music
+F12 Play previous track
+Ins Play next track
+Np7 Soundboard1
+Np8 Soundboard2
+Np9 Soundboard3
+Del Soundboard4
+Pse Stop all sound
