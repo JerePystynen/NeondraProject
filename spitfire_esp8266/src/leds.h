@@ -25,9 +25,20 @@
 // [Blade]
 // 40 LSTRIP (A)	245-284
 // 40 LSTRIP (B)	285-324
-#define NUM_LEDS (NUM_SMALLRING_LEDS * 2 + NUM_LEDS_MATRIX * 2 + NUM_BIGRING_LEDS * 2 + NUM_SHAFT_LEDS)
+//#define NUM_LEDS (NUM_SMALLRING_LEDS * 2 + NUM_LEDS_MATRIX * 2 + NUM_BIGRING_LEDS * 2 + NUM_SHAFT_LEDS)
+#define NUM_LEDS NUM_LEDS_MATRIX
 
 CRGB leds[NUM_LEDS];
+
+CRGB COLORS[] = {
+	CRGB::CadetBlue,		// 0: Default/Inactive
+	CRGB::YellowGreen,		// 1: Active
+	CRGB::IndianRed,		// 2: Highlight
+};
+
+uint8_t color_mode = 0;
+uint8_t timer_index = 0;
+uint8_t frame = 0;
 
 #define X 1
 #define _ 0
@@ -192,17 +203,12 @@ constexpr std::array<std::array<uint8_t, 64>, 14> art = {{
 #undef X
 #undef _
 
-constexpr uint8_t get_pixel(uint8_t frame, uint8_t row, uint8_t col) {
-  return art[frame][row * 8 + col];
+constexpr uint8_t get_pixel(std::size_t frame, std::size_t index) {
+  if (frame >= 0 && frame < 14 && index >= 0 && index < 64) {
+    return art[frame][index];
+  }
+  return 0;
 }
-
-CRGB COLORS[] = {
-	CRGB::CadetBlue,		// 0: Default/Inactive
-	CRGB::YellowGreen,		// 1: Active
-	CRGB::IndianRed,		// 2: Highlight
-};
-
-uint8_t color_mode = 0;
 
 void set_color_mode(uint8_t val) {
 	EEPROM.put(0x00, val);
@@ -248,10 +254,20 @@ void setup_leds() {
 	FastLED.show();
 }
 
-int frame = 0;
-
 void update_leds(int offset_x, int offset_y) {
-	FastLED.clear();
+
+  // gets called every 60ms.
+
+  // Frame switch timer loop.
+  timer_index = timer_index + 1;
+  if (timer_index > 4) {
+    frame = frame + 1;
+    if (frame > 13) {
+      frame = 0;
+    }
+    timer_index = 0;
+  }
+
   for (int y = 0; y < MATRIX_HEIGHT; y++) {
     for (int x = 0; x < MATRIX_WIDTH; x++) {
       // Calculate the ledIndex considering the snakelike pattern and offsets.
@@ -260,13 +276,11 @@ void update_leds(int offset_x, int offset_y) {
       int ledIndex = y % 2 == 0 ? y * MATRIX_WIDTH + x : (y + 1) * MATRIX_WIDTH - x - 1;
 
       // Apply offsets.
-      int row = (y + offset_y) * MATRIX_WIDTH;
-      int column = (x + offset_x);
       int offset = (y + offset_y) * MATRIX_WIDTH + (x + offset_x);
 
       // Assign color to the LED.
       // If inside bounds, get the color by the value inside the frame array.
-      leds[ledIndex] = (offset >= 0 && offset < NUM_LEDS) ? get_color(get_pixel(frame, row, column)) : get_color(0);
+      leds[ledIndex] = (offset >= 0 && offset < NUM_LEDS) ? get_color(get_pixel(frame, offset)) : get_color(0);
     }
   }
   FastLED.show();

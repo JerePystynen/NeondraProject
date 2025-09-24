@@ -2,7 +2,7 @@
 #include <ESP8266WebServer.h>
 #include "./gyroscope.h"
 #include "./leds.h"
-#include "./led_strip.h"
+//#include "./led_strip.h"
 
 #define WIFI_SSID "GalaxyS22"
 #define WIFI_PASS "azae1234"
