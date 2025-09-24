@@ -10,11 +10,16 @@ const int INERTIA_THRESHOLD_Z = 8;
 
 const float INERTIA_FACTOR = 0.00012;
 
-void setup_gyro(void) {
-  BMI160.begin(BMI160GenClass::I2C_MODE, 0x68);  // GY-521 MPU-6050 default I2C address '0x69'
+void bmi160_intr(void) {
+  Serial.println("BMI160 interrupt: TAP!");
 }
 
-void get_gyro(int *x, int *y) {
+void setup_gyro(void) {
+  // GY-521 MPU-6050 default I2C address is '0x69'.
+  BMI160.begin(BMI160GenClass::I2C_MODE, 0x68);
+}
+
+void get_gyro(int* x, int* y) {
   int ax, ay, az, gx, gy, gz;
   BMI160.readAccelerometer(ax, ay, az);
   BMI160.readGyro(gx, gy, gz);
