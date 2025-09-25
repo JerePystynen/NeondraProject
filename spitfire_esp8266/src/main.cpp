@@ -1,8 +1,28 @@
 #include <Arduino.h>
 #include <ESP8266WebServer.h>
 #include "./gyroscope.h"
-#include "./leds.h"
-//#include "./led_strip.h"
+#include "./led.h"
+#include "./led_strip.h"
+
+#define PIN_WIRE_SDA (4)
+#define PIN_WIRE_SCL (5)
+#define SDA PIN_WIRE_SDA
+#define SCL PIN_WIRE_SCL
+#define LED_BUILTIN 16
+#define BUILTIN_LED 16
+#define D0  16
+#define D1  5
+#define D2  4
+#define D3  0
+#define D4  2
+#define D5  14
+#define D6  12
+#define D7  13
+#define D8  15
+#define D9  3
+#define D10 1
+#define ESP8266_RX D6
+#define ESP8266_TX D5
 
 #define WIFI_SSID "GalaxyS22"
 #define WIFI_PASS "azae1234"
@@ -58,15 +78,13 @@ void setup(void) {
 }
 
 void loop(void) {
-  // Loop each 60ms.
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= 60) {
+  unsigned long current_millis = millis();
+  if (current_millis - previousMillis >= 60) {
     get_gyro(&offset_y, &offset_x);
     update_leds(offset_x, offset_y);
   }
-  // Loop each 10ms.
   if (is_wifi_connected) {
     server.handleClient();
   }
-  delay(60);
+  delay(16);
 }
